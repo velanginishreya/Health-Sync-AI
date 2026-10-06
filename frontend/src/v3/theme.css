@@ -1,0 +1,427 @@
+﻿/*
+  v3 redesign ("Vital Clay"): standalone stylesheet, imported only by /v3 routes.
+
+  This file owns what Tailwind utilities cannot express cleanly:
+  1. The material language: bone canvas, vellum surfaces, clay controls (physical
+     extruded controls with a hard keycap edge), dusk instrument panels.
+  2. State craft that must be CSS: the clay edge collapsing on :active, focus rings
+     drawn as box-shadow (Safari does not round outlines to border-radius), grain.
+
+  It does not touch, override, or depend on ../index.css (v1).
+  Surface tokens live in tailwind.config.js under the bone / sand / petrol / dusk /
+  sig namespaces; type roles live there too (d1..d5 / b1..b4 / lbl / mic / m1..m4).
+
+  Rules enforced here:
+  - Only transform / opacity / box-shadow / filter animate. Nothing animates layout.
+  - Every transition is interruptible (no keyframes on interactive controls).
+  - prefers-reduced-motion kills travel and squash; the edge/shadow state change
+    stays, because it is information, not decoration.
+*/
+
+/* ------------------------------------------------------------------ canvas */
+
+.v3-root {
+  /* Chrome geometry and content widths: one source, and they scale with the
+     display. On a 1440 screen the page is an 1180 column; on an ultrawide it grows
+     instead of sitting as a strip in the middle of the desk. */
+  --v3-strip-h: 44px;
+  --v3-topbar-h: 60px;
+  --v3-tabbar-h: 64px;
+  --v3-sidebar: 264px;
+  --v3-content: 1180px;
+  --v3-shell: 1444px;
+  --v3-marketing: 1200px;
+  --v3-wide: 1320px;
+  --v3-reading: 720px;
+
+  background-color: #f4f1e9; /* bone */
+  color: #23201a; /* sand-900 */
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Daylight wash: a single soft petrol bloom at the top of the canvas. Static,
+     cheap (one background layer, no fixed overlay), and it keeps the bone from
+     reading as plain beige. */
+  background-image: radial-gradient(
+    128% 78% at 50% -22%,
+    rgba(23, 118, 124, 0.085) 0%,
+    rgba(23, 118, 124, 0.03) 42%,
+    transparent 72%
+  );
+  background-repeat: no-repeat;
+}
+
+/* Display voice: Spectral, light at scale, tight tracking. Applied to h1 and h2
+   only (page titles and section statements) plus every first-class Figure value.
+   Card and panel headings (h3) stay in the interface grotesque, so the serif never
+   appears at small sizes. Display type never goes bold: hierarchy is scale. */
+.v3-root h1,
+.v3-root h2,
+.v3-display {
+  font-family: "Spectral", Georgia, ui-serif, serif;
+  font-synthesis: none;
+}
+
+.v3-root ::selection {
+  background-color: #abd5d6; /* petrol-200 */
+  color: #072e33; /* petrol-900 */
+}
+
+/* Large displays get more room, in one place. Every shell and page reads these
+   variables, so the app and the marketing pages stay in step as they grow. On a
+   2560 screen the page is a 1480 column, not a 1180 strip in a sea of white. */
+@media (min-width: 1536px) {
+  .v3-root {
+    --v3-content: 1320px;
+    --v3-shell: 1600px;
+    --v3-marketing: 1360px;
+    --v3-wide: 1460px;
+    --v3-sidebar: 276px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .v3-root {
+    --v3-content: 1480px;
+    --v3-shell: 1780px;
+    --v3-marketing: 1520px;
+    --v3-wide: 1620px;
+    --v3-sidebar: 288px;
+  }
+}
+
+@media (min-width: 2400px) {
+  .v3-root {
+    --v3-content: 1640px;
+    --v3-shell: 1960px;
+    --v3-marketing: 1680px;
+    --v3-wide: 1800px;
+  }
+}
+
+/* One focus policy: a 2px petrol ring with a bone gap, painted as box-shadow so it
+   follows border-radius everywhere. Controls that carry their own clay shading
+   draw this ring on a ::after layer instead (see .v3-clay). */
+.v3-root :focus-visible {
+  outline: 2px solid #0e5f66;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.v3-root ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.v3-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.v3-root ::-webkit-scrollbar-thumb {
+  background-color: #d8d1c1; /* sand-300 */
+  border-radius: 999px;
+  border: 3px solid #f4f1e9;
+}
+.v3-root ::-webkit-scrollbar-thumb:hover {
+  background-color: #b5ac99; /* sand-400 */
+}
+
+/* Measured values: every clinical number lines up in a column, always. */
+.v3-num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Wide tables scroll inside their own frame. `contain: inline-size` is the load
+   bearing line: without it the table's intrinsic min-content width propagates up
+   through every auto-width ancestor (a grid item defaults to min-width: auto) and
+   widens the whole document instead of scrolling inside the frame. This was a real
+   horizontal-overflow defect on phones, fixed here once for every table. */
+.v3-scroll-x {
+  overflow-x: auto;
+  contain: inline-size;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* --------------------------------------------------------------- materials */
+
+/* Grain: a 160px tiled fractal-noise tile. Applied to dusk panels and the
+   marketing hero only, never to a full-screen fixed layer (fixed + blend layers
+   repaint on scroll and cost more than they add). */
+.v3-grain {
+  position: relative;
+}
+.v3-grain::after,
+.v3-dusk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Dusk: the instrument surface. Minimal dark green ink: one soft petrol bloom at
+   the top-left over a near-black green falloff, a 1px inner rim, and film grain on
+   top. Nothing else: the restraint is what reads as premium. */
+.v3-dusk {
+  position: relative;
+  isolation: isolate;
+  background-color: #0a1a15; /* dusk-900 */
+  background-image:
+    radial-gradient(130% 92% at 6% -12%, rgba(23, 118, 124, 0.34) 0%, rgba(23, 118, 124, 0.07) 44%, transparent 66%),
+    linear-gradient(178deg, #0e231c 0%, #08130f 68%, #06100d 100%);
+  color: #f2efe5;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 30px 60px -34px rgba(3, 14, 11, 0.65);
+}
+
+.v3-dusk-rule {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* --------------------------------------------------------------- clay controls
+
+   The plush press, in four parts:
+   1. A hard, zero-blur bottom edge (the "wall" of the key): this is what the eye
+      reads as real thickness. Edge height is 12 to 14 percent of control height.
+   2. A top rim light, so the face reads as lit from above.
+   3. A soft ambient shadow under the edge, so the control sits ON the bone.
+   4. On :active the edge collapses to 1px and an inset top shadow appears, so the
+      face lands on the floor and reads as pressed INTO the page.
+
+   Transform (lift, squash, translate) is owned by Framer Motion so the physical
+   parts stay in one system: hover lifts the whole key, tap translates the face by
+   exactly the edge height and squashes it (scaleX 1.025 / scaleY 0.955, origin
+   center 65%). CSS owns only the shading. Never both on transform. */
+
+.v3-clay {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center 65%;
+  transition:
+    box-shadow 150ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The focus ring is an outline, not a ::after layer, and that is deliberate: a
+   pseudo-element positioned outside the control (-3px) contributes to the
+   document's scrollable overflow, which put 3px of horizontal scroll on every
+   phone viewport that had a full-width or flush-right control. Outlines never
+   contribute to overflow, and every engine this ships to follows border-radius. */
+.v3-clay:focus-visible {
+  outline: 2px solid #0e5f66;
+  outline-offset: 3px;
+}
+.v3-clay:focus-visible::after {
+  opacity: 1;
+}
+
+.v3-clay[aria-disabled="true"],
+.v3-clay:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.55) brightness(1.02);
+  opacity: 0.55;
+}
+
+/* --- petrol: the one primary action per view --- */
+.clay-petrol {
+  --edge: 4px;
+  color: #f2fbfa;
+  background-image: linear-gradient(180deg, #14747e 0%, #0e5f66 56%, #0b5259 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -2px 3px rgba(4, 40, 44, 0.26),
+    0 var(--edge) 0 0 #073c42,
+    0 calc(var(--edge) + 6px) 14px -4px rgba(9, 60, 66, 0.34);
+}
+.clay-petrol:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -2px 3px rgba(4, 40, 44, 0.26),
+    0 var(--edge) 0 0 #073c42,
+    0 calc(var(--edge) + 9px) 20px -6px rgba(9, 60, 66, 0.42);
+}
+.clay-petrol:active {
+  filter: brightness(0.975);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 4px 8px rgba(4, 36, 40, 0.42),
+    0 1px 0 0 #073c42,
+    0 2px 4px -1px rgba(9, 60, 66, 0.26);
+  transition-duration: 90ms;
+}
+
+/* --- dusk: the dark control, for actions that belong to instrument surfaces --- */
+.clay-dusk {
+  --edge: 4px;
+  color: #f0ede3;
+  background-image: linear-gradient(180deg, #1d3730 0%, #14281f 55%, #0f211a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.34),
+    0 var(--edge) 0 0 #04100c,
+    0 calc(var(--edge) + 6px) 14px -4px rgba(4, 16, 12, 0.44);
+}
+.clay-dusk:hover {
+  filter: brightness(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.34),
+    0 var(--edge) 0 0 #04100c,
+    0 calc(var(--edge) + 9px) 20px -6px rgba(4, 16, 12, 0.52);
+}
+.clay-dusk:active {
+  filter: brightness(0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 4px 8px rgba(0, 0, 0, 0.5),
+    0 1px 0 0 #04100c,
+    0 2px 4px -1px rgba(4, 16, 12, 0.32);
+  transition-duration: 90ms;
+}
+
+/* --- vellum: the secondary control. Paper stacked on paper, still pressable. --- */
+.clay-vellum {
+  --edge: 3px;
+  color: #23201a;
+  background-image: linear-gradient(180deg, #fffefa 0%, #f7f4ec 60%, #f1ede2 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 18, 16, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 var(--edge) 0 0 #ded5c3,
+    0 calc(var(--edge) + 6px) 14px -5px rgba(20, 18, 16, 0.16);
+}
+.clay-vellum:hover {
+  filter: brightness(1.015);
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 18, 16, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 var(--edge) 0 0 #ded5c3,
+    0 calc(var(--edge) + 9px) 20px -7px rgba(20, 18, 16, 0.2);
+}
+.clay-vellum:active {
+  filter: brightness(0.985);
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 18, 16, 0.08),
+    inset 0 3px 6px rgba(20, 18, 16, 0.13),
+    0 1px 0 0 #ded5c3,
+    0 2px 4px -1px rgba(20, 18, 16, 0.12);
+  transition-duration: 90ms;
+}
+
+/* --- critical: destructive only. Never decorative. --- */
+.clay-critical {
+  --edge: 4px;
+  color: #fff6f4;
+  background-image: linear-gradient(180deg, #c53a2e 0%, #a92c22 58%, #97271d 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -2px 3px rgba(70, 12, 8, 0.3),
+    0 var(--edge) 0 0 #6f1c14,
+    0 calc(var(--edge) + 6px) 14px -4px rgba(111, 28, 20, 0.4);
+}
+.clay-critical:hover {
+  filter: brightness(1.06);
+}
+.clay-critical:active {
+  filter: brightness(0.97);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 4px 8px rgba(70, 12, 8, 0.44),
+    0 1px 0 0 #6f1c14,
+    0 2px 4px -1px rgba(111, 28, 20, 0.3);
+  transition-duration: 90ms;
+}
+
+/* --- quiet: no material, just a hover pool. For low-emphasis actions only. --- */
+.clay-quiet {
+  color: #544e43;
+  background: transparent;
+  box-shadow: none;
+}
+.clay-quiet:hover {
+  background-color: rgba(216, 209, 193, 0.42);
+  color: #23201a;
+}
+.clay-quiet:active {
+  background-color: rgba(216, 209, 193, 0.62);
+  transition-duration: 90ms;
+}
+
+/* Quiet controls on a dusk surface invert their hover pool. */
+.clay-quiet-dusk {
+  color: #b9c9c8;
+  background: transparent;
+  box-shadow: none;
+}
+.clay-quiet-dusk:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f0ede3;
+}
+.clay-quiet-dusk:active {
+  background-color: rgba(255, 255, 255, 0.14);
+  transition-duration: 90ms;
+}
+
+/* Ink-tile: the small square icon button, same physics, smaller edge. */
+.v3-clay.clay-icon {
+  --edge: 3px;
+  padding: 0;
+}
+
+/* Sticky offsets under the chrome: one utility, so a sticky aside can never tuck
+   under the topbar by four pixels again (a named v2 defect). */
+.v3-sticky {
+  position: sticky;
+  top: calc(var(--v3-topbar-h) + 24px);
+}
+
+/* ------------------------------------------------------------ text reveal masks
+
+   The one editorial flourish, used once per page at most: a line of display type
+   climbs out of an overflow-hidden mask. Lines only, never characters, so text
+   stays real text for screen readers and search. */
+.v3-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.v3-mask > span {
+  display: block;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------- reduced motion floor */
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-root *,
+  .v3-root *::before,
+  .v3-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .v3-clay {
+    transform: none !important;
+  }
+  .v3-mask > span {
+    transform: none !important;
+  }
+}

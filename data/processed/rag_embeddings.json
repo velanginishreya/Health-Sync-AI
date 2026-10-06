@@ -1,0 +1,131 @@
+{
+  "vocab_size": 72,
+  "total_documents": 22,
+  "embeddings_sample": [
+    {
+      "text": "Condition: Type 2 Diabetes Mellitus - Status: ConditionStatus.ACTIVE - Notes: Physician diagnosed. Managed with oral antihyperglycemic medication.",
+      "vector": [
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "text": "Condition: Essential Hypertension - Status: ConditionStatus.ACTIVE - Notes: Elevated baseline blood pressure monitored by primary doctor.",
+      "vector": [
+        0.26726124191242434,
+        0.0,
+        0.0,
+        0.0,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434
+      ]
+    },
+    {
+      "text": "Condition: Type 2 Diabetes Mellitus - Status: ConditionStatus.ACTIVE - Notes: Physician diagnosed. Managed with oral antihyperglycemic medication.",
+      "vector": [
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.25819888974716115,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "text": "Condition: Essential Hypertension - Status: ConditionStatus.ACTIVE - Notes: Elevated baseline blood pressure monitored by primary doctor.",
+      "vector": [
+        0.26726124191242434,
+        0.0,
+        0.0,
+        0.0,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434,
+        0.26726124191242434
+      ]
+    },
+    {
+      "text": "Medication: Metformin HCl Dosage: 500 mg Frequency: Twice daily with meals PrescribedBy: Dr. Robert Smith",
+      "vector": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.2773500981126146,
+        0.0,
+        0.0,
+        0.2773500981126146,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}

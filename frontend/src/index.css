@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface text-ink-900 antialiased font-sans;
+  }
+
+  ::selection {
+    @apply bg-accent-200 text-ink-900;
+  }
+
+  /* Consistent, visible focus ring across every interactive element, so no invisible focus states */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.600');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Instrument-panel surface used by every card/panel across the app */
+  .panel {
+    @apply bg-surface-raised border border-line rounded-card shadow-panel;
+  }
+
+  /* Uppercase tracked micro-label, used above readouts and section headers, the
+     control-room "instrument label" signature */
+  .instrument-label {
+    @apply text-[11px] font-semibold uppercase tracking-label text-ink-400;
+  }
+
+  /* Tabular numeric readout: every clinical value in the product uses this */
+  .readout {
+    @apply font-mono tabular-nums;
+  }
+
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold;
+  }
+  .status-pill-good { @apply bg-status-good-50 border-status-good-100 text-status-good-700; }
+  .status-pill-watch { @apply bg-status-watch-50 border-status-watch-100 text-status-watch-700; }
+  .status-pill-critical { @apply bg-status-critical-50 border-status-critical-100 text-status-critical-700; }
+  .status-pill-info { @apply bg-accent-50 border-accent-100 text-accent-700; }
+  .status-pill-neutral { @apply bg-ink-50 border-line text-ink-600; }
+}
